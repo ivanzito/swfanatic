@@ -19,7 +19,7 @@ public class Planets {
     private String previous;
 
     @JsonProperty("results")
-    private List<Planet> Planet;
+    private List<Planet> planets;
 
     public void setNext(String next) {
         if(next != null) {
