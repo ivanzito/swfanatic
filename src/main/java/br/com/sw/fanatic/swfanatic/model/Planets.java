@@ -24,14 +24,14 @@ public class Planets {
     public void setNext(String next) {
         if(next != null) {
             String[] split = next.split("\\?");
-            this.next = next.replace(split[0],"http://localhost:8080/Planet/" + split[1].split("=")[1]).split("\\?")[0];
+            this.next = next.replace(split[0],"http://localhost:8080/planets/" + split[1].split("=")[1]).split("\\?")[0];
         }
     }
 
     public void setPrevious(String previous) {
         if(previous != null) {
             String[] split = previous.split("\\?");
-            this.previous = previous.replace(split[0],"http://localhost:8080/Planet/" + split[1].split("=")[1]).split("\\?")[0];
+            this.previous = previous.replace(split[0],"http://localhost:8080/planets/" + split[1].split("=")[1]).split("\\?")[0];
         }
     }
 }
