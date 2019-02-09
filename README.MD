@@ -13,7 +13,7 @@ $ 'http://localhost:8080/planet'
 ### Get a planet by id
 ```sh
  curl -i -X GET \
-  'https://swapi.co/api/planets/1/'
+  'https://localhost:8080/planet/1/'
 ```
 
 ### Get a planet by name
