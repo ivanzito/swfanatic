@@ -1,6 +1,5 @@
 package br.com.sw.fanatic.swfanatic.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +18,6 @@ public class Planets {
 
     private String previous;
 
-    @JsonAlias("Planet")
     @JsonProperty("results")
     private List<Planet> Planet;
 
