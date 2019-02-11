@@ -6,15 +6,10 @@ import br.com.sw.fanatic.swfanatic.repository.PlanetRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 
-import java.time.Duration;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalUnit;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
@@ -28,22 +23,19 @@ public class PlanetService {
         this.planetsService = planetsService;
     }
 
-    public Planet save(Planet planet) {
+    public Planet save(final Planet planet) {
 
-        //Não consegui transformar um Flux<Planets> em uma List<Planets>
-        //por isso deixei comentado aqui o mapeamento até o totalFilms
-        /*
-        Stream<Planets> planetsStream = planetsService.listPlanets().toStream();
-        List<Integer> totalFilms = planetsStream.map(Planets::getPlanet)
-                .flatMap(Collection::stream)
-                .filter(p1 -> planet.getName().equals(p1.getName()))
-                .map(Planet::getTotalFilms)
-                .collect(Collectors.toList());
+        final List<Planets> planets = new ArrayList<>();
 
-        if(!totalFilms.isEmpty()) {
-            planet.setTotalFilms(totalFilms.get(0));
-        }
-        */
+        this.planetsService.listPlanets().log().subscribe(planets::add);
+
+        final Optional<Planet> planetOptional = planets.stream()
+                                                       .flatMap(p -> p.getPlanets().stream())
+                                                       .filter(p1 -> p1.getName().equals(planet.getName()))
+                                                       .findFirst();
+
+        planetOptional.ifPresent(planet1 -> planet.setTotalFilms(planet1.getTotalFilms()));
+
         return this.planetRepository.save(planet);
     }
 
