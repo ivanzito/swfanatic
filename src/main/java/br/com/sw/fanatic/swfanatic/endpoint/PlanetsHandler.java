@@ -29,7 +29,7 @@ public class PlanetsHandler {
     public Mono<ServerResponse> listAll(ServerRequest request) {
 
         final String source = request.pathVariable("source").toUpperCase();
-        if(SourceType.valueOf(source) == SourceType.REMOTE) {
+        if(SourceType.valueOf(source) == SourceType.ONLINE) {
 
             final Flux<Result> resultFlux = planetsServiceSwApi.listPlanets();
             return ServerResponse
@@ -56,7 +56,6 @@ public class PlanetsHandler {
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(planetFlux, Result.class);
-
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
