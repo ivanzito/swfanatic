@@ -18,10 +18,12 @@ public class PlanetsRouter {
     public RouterFunction<ServerResponse> route(PlanetsHandler PlanetsHandler) {
 
         return RouterFunctions
-            .route(RequestPredicates.GET("/planets")
-            .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listAllFromSwApi)
+            .route(RequestPredicates.GET("/planets/{source}")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listAll)
             .andRoute(RequestPredicates.GET("/planets/{page}")
-            .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listByPage);
+            .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listByPage)
+            .andRoute(RequestPredicates.POST("/planets/")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::save);
 
     }
 }

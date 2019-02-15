@@ -1,11 +1,13 @@
 package br.com.sw.fanatic.swfanatic.service;
 
 import br.com.sw.fanatic.swfanatic.model.Planet;
-import br.com.sw.fanatic.swfanatic.model.Planets;
+import br.com.sw.fanatic.swfanatic.model.Result;
 import br.com.sw.fanatic.swfanatic.repository.PlanetRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,21 +15,21 @@ import java.util.Optional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
-public class PlanetService {
+public class PlanetsServiceLocal {
 
-    private PlanetsService planetsService;
-    private PlanetRepository planetRepository;
+    private PlanetsServiceSwApi planetsServiceSwApi;
+    private PlanetRepository    planetRepository;
 
-    public PlanetService(PlanetsService planetsService, PlanetRepository planetRepository) {
+    public PlanetsServiceLocal(PlanetsServiceSwApi planetsServiceSwApi, PlanetRepository planetRepository) {
         this.planetRepository = planetRepository;
-        this.planetsService = planetsService;
+        this.planetsServiceSwApi = planetsServiceSwApi;
     }
 
-    public Planet save(final Planet planet) {
+    public Mono<Planet> save(final Planet planet) {
 
-        final List<Planets> planets = new ArrayList<>();
+        final List<Result> planets = new ArrayList<>();
 
-        this.planetsService.listPlanets().log().subscribe(planets::add);
+        this.planetsServiceSwApi.listPlanets().log().subscribe(planets::add);
 
         final Optional<Planet> planetOptional = planets.stream()
                                                        .flatMap(p -> p.getPlanets().stream())
@@ -36,11 +38,11 @@ public class PlanetService {
 
         planetOptional.ifPresent(planet1 -> planet.setTotalFilms(planet1.getTotalFilms()));
 
-        return this.planetRepository.save(planet);
+        return Mono.just(this.planetRepository.save(planet));
     }
 
-    public List<Planet> findAll() {
-        return this.planetRepository.findAll();
+    public Flux<Planet> findAll() {
+        return Flux.fromIterable(this.planetRepository.findAll());
     }
 
     public Planet findById(int id) {
