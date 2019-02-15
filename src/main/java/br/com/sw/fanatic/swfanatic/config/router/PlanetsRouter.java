@@ -20,7 +20,7 @@ public class PlanetsRouter {
         return RouterFunctions
             .route(RequestPredicates.GET("/planets/{source}")
             .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listAll)
-            .andRoute(RequestPredicates.GET("/planets/{page}")
+            .andRoute(RequestPredicates.GET("/planets/online/{page}")
             .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::listByPage)
             .andRoute(RequestPredicates.POST("/planets/")
             .and(RequestPredicates.accept(MediaType.APPLICATION_STREAM_JSON)), PlanetsHandler::save);
