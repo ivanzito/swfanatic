@@ -5,16 +5,24 @@ import br.com.sw.fanatic.swfanatic.model.Result;
 import br.com.sw.fanatic.swfanatic.model.request.SourceType;
 import br.com.sw.fanatic.swfanatic.service.PlanetsServiceLocal;
 import br.com.sw.fanatic.swfanatic.service.PlanetsServiceSwApi;
+import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Subscriber;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @Component
+@Slf4j
 public class PlanetsHandler {
 
     private final PlanetsServiceSwApi planetsServiceSwApi;
@@ -44,9 +52,6 @@ public class PlanetsHandler {
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(planetFlux, Planet.class);
         }
-
-
-
     }
 
     public Mono<ServerResponse> listByPage(ServerRequest request) {
@@ -58,12 +63,15 @@ public class PlanetsHandler {
                 .body(planetFlux, Result.class);
     }
 
-    public Mono<ServerResponse> save(ServerRequest request) {
-        //TODO
-        return ServerResponse
-                        .ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(planetsServiceLocal.save(null), Planet.class);
 
+    public Mono<ServerResponse> save(ServerRequest request) {
+
+        final CompletableFuture<Planet> planetMono = request.bodyToMono(Planet.class).toFuture();
+
+        Mono<Planet> planetSaved = this.planetsServiceLocal.save(planetMono.getNow(new Planet()));
+        return ServerResponse
+                    .ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(planetSaved, Planet.class);
     }
 }
